@@ -1,7 +1,7 @@
 package com.example.pj_webshop.controllers;
 
-import com.example.pj_webshop.entities.Order;
-import com.example.pj_webshop.entities.Product;
+import com.example.pj_webshop.entities.models.Order;
+import com.example.pj_webshop.entities.models.products.Product;
 import com.example.pj_webshop.services.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 package com.example.pj_webshop.security;
 
-import com.example.pj_webshop.components.JwtRequestFilter;
+import com.example.pj_webshop.components.jwt.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,16 +11,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @EnableWebSecurity
@@ -33,19 +29,34 @@ public class SecurityConfig {
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
+//    @Bean
+//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests((authorize) -> authorize
+//                        .requestMatchers(GET, "/products/find/all/{name}", "/products/find/all", "/products/find/{id}").permitAll()
+////                        .requestMatchers(GET, "/products/**", "/products/option/**", "/products/group/**", "/products/properties/**").permitAll()
+////                        .requestMatchers(POST, "/products/**", "/products/option/**", "/products/group/**", "/products/properties/**").permitAll()
+////                        .requestMatchers(PUT, "/products/**", "/products/option/**", "/products/group/**", "/products/properties/**").permitAll()
+////                        .requestMatchers(DELETE, "/products/**", "/products/option/**", "/products/group/**", "/products/properties/**").permitAll()
+//                        .requestMatchers(POST, "/admin/login").permitAll()
+//                        .anyRequest().authenticated())
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//
+//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(GET, "/products/find/all/{name}", "/products/find/all", "/products/find/{id}").permitAll()
-                        .requestMatchers(POST, "/admin/login").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

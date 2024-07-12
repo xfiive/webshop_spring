@@ -1,6 +1,6 @@
 package com.example.pj_webshop.controllers;
 
-import com.example.pj_webshop.entities.Order;
+import com.example.pj_webshop.entities.models.Order;
 import com.example.pj_webshop.services.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;

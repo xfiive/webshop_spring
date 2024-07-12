@@ -1,6 +1,6 @@
 package com.example.pj_webshop.services;
 
-import com.example.pj_webshop.entities.Delivery;
+import com.example.pj_webshop.entities.models.Delivery;
 import com.example.pj_webshop.repositories.DeliveryRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,9 @@
 package com.example.pj_webshop.services;
 
-import com.example.pj_webshop.components.Email;
-import com.example.pj_webshop.components.HtmlToPdfConverter;
-import com.example.pj_webshop.entities.Order;
+import com.example.pj_webshop.entities.models.Email;
+import com.example.pj_webshop.components.emails.HtmlToPdfConverter;
+import com.example.pj_webshop.entities.models.Order;
+import com.example.pj_webshop.services.moderation.ClientService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.jetbrains.annotations.NotNull;

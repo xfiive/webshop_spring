@@ -1,10 +1,14 @@
 package com.example.pj_webshop.services;
 
-import com.example.pj_webshop.entities.*;
-import com.example.pj_webshop.repositories.ClientOrderRepository;
+import com.example.pj_webshop.entities.interim.ClientOrder;
+import com.example.pj_webshop.entities.interim.OrderedProduct;
+import com.example.pj_webshop.entities.models.Delivery;
+import com.example.pj_webshop.entities.models.Order;
+import com.example.pj_webshop.entities.models.products.Product;
+import com.example.pj_webshop.repositories.interim.ClientOrderRepository;
 import com.example.pj_webshop.repositories.DeliveryRepository;
 import com.example.pj_webshop.repositories.OrderRepository;
-import com.example.pj_webshop.repositories.OrderedProductRepository;
+import com.example.pj_webshop.repositories.interim.OrderedProductRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

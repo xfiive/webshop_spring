@@ -1,6 +1,6 @@
 package com.example.pj_webshop.controllers;
 
-import com.example.pj_webshop.entities.Delivery;
+import com.example.pj_webshop.entities.models.Delivery;
 import com.example.pj_webshop.services.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
