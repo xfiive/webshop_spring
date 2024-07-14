@@ -1,8 +1,10 @@
 package com.example.pj_webshop.services.products;
 
 import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
+import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductOptionRepository;
+import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ public class ProductOptionGroupService {
 
     private final ProductOptionGroupRepository repository;
     private final ProductOptionRepository optionRepository;
+    private final ProductPropertiesRepository propertiesRepository;
 
     public List<ProductOptionGroup> findAll() {
         return repository.findAll();
@@ -56,4 +59,38 @@ public class ProductOptionGroupService {
         repository.deleteById(id);
         return true;
     }
+
+    @Transactional
+    public Optional<ProductOptionGroup> updatePropertiesId(int id, int newPropertiesId) {
+        Optional<ProductOptionGroup> optionalProductOptionGroup = repository.findById(id);
+
+        if (optionalProductOptionGroup.isEmpty())
+            return Optional.empty();
+
+        ProductOptionGroup productOptionGroup = optionalProductOptionGroup.get();
+        Optional<ProductProperties> newProperties = propertiesRepository.findById(newPropertiesId);
+
+        if (newProperties.isEmpty())
+            return Optional.empty();
+
+        productOptionGroup.setProductPropertiesId(newProperties.get().getProductPropertiesId());
+        return Optional.of(repository.saveAndFlush(productOptionGroup));
+    }
+
+//    @Transactional
+//    public Optional<ProductOption> updateGroupId(int id, int newGroupId) {
+//        Optional<ProductOption> optionalProductOption = productOptionRepository.findById(id);
+//
+//        if (optionalProductOption.isEmpty())
+//            return Optional.empty();
+//
+//        ProductOption productOption = optionalProductOption.get();
+//        Optional<ProductOptionGroup> newGroup = productOptionGroupRepository.findById(newGroupId);
+//
+//        if (newGroup.isEmpty())
+//            return Optional.empty();
+//
+//        productOption.setGroupId(newGroup.get().getProductOptionGroupId());
+//        return Optional.of(productOptionRepository.saveAndFlush(productOption));
+//    }
 }

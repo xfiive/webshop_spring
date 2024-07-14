@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
@@ -19,6 +18,9 @@ public class ProductOptionGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productOptionGroupId;
+
+    @Column(name = "properties_id")
+    private int productPropertiesId;
 
     @Column(name = "name")
     private String name;

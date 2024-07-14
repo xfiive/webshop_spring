@@ -1,23 +1,24 @@
 package com.example.pj_webshop.services.products;
 
 import com.example.pj_webshop.entities.models.products.ProductOption;
+import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
+import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductOptionRepository;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductOptionService {
 
     private final ProductOptionRepository productOptionRepository;
-
-    @Autowired
-    public ProductOptionService(ProductOptionRepository productOptionRepository) {
-        this.productOptionRepository = productOptionRepository;
-    }
+    private final ProductOptionGroupRepository productOptionGroupRepository;
 
     public List<ProductOption> findAll() {
         return productOptionRepository.findAll();
@@ -49,6 +50,23 @@ public class ProductOptionService {
         }
         productOptionRepository.save(option);
         return Optional.of(option);
+    }
+
+    @Transactional
+    public Optional<ProductOption> updateGroupId(int id, int newGroupId) {
+        Optional<ProductOption> optionalProductOption = productOptionRepository.findById(id);
+
+        if (optionalProductOption.isEmpty())
+            return Optional.empty();
+
+        ProductOption productOption = optionalProductOption.get();
+        Optional<ProductOptionGroup> newGroup = productOptionGroupRepository.findById(newGroupId);
+
+        if (newGroup.isEmpty())
+            return Optional.empty();
+
+        productOption.setGroupId(newGroup.get().getProductOptionGroupId());
+        return Optional.of(productOptionRepository.saveAndFlush(productOption));
     }
 
     public Optional<ProductOption> update(int id, ProductOption option) {

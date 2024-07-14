@@ -1,5 +1,6 @@
 package com.example.pj_webshop.controllers.products;
 
+import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.services.products.ProductPropertiesService;
 import com.example.pj_webshop.services.products.ProductService;
@@ -36,6 +37,14 @@ public class ProductPropertiesController {
         Optional<ProductProperties> properties = service.findById(id);
         return properties.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    }
+
+    @GetMapping("/find/{propertiesId}/groups")
+    public ResponseEntity<List<ProductOptionGroup>> findGroupsByPropertiesId(@PathVariable int propertiesId) {
+        List<ProductOptionGroup> groups = service.findGroupsByOptionsId(propertiesId);
+        if (groups.isEmpty())
+            return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
         /*

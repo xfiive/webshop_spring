@@ -1,7 +1,9 @@
 package com.example.pj_webshop.services.products;
 
 import com.example.pj_webshop.entities.models.products.Product;
+import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
+import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
 import com.example.pj_webshop.repositories.products.ProductRepository;
 import jakarta.persistence.EntityManager;
@@ -25,6 +27,7 @@ public class ProductPropertiesService {
     private final ProductRepository productRepository;
     private final ProductService productService;
     private final ProductPropertiesRepository productPropertiesRepository;
+    private final ProductOptionGroupRepository productOptionGroupRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -78,5 +81,9 @@ public class ProductPropertiesService {
         }
         repository.deleteById(id);
         return true;
+    }
+
+    public List<ProductOptionGroup> findGroupsByOptionsId(int propertiesId) {
+        return productOptionGroupRepository.findByProductPropertiesId(propertiesId);
     }
 }

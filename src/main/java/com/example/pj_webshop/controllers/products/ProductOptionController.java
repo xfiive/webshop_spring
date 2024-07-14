@@ -56,6 +56,13 @@ public class ProductOptionController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
     }
 
+    @PutMapping("/change/{id}/groupId")
+    public ResponseEntity<ProductOption> update(@PathVariable int id, @RequestParam int groupId) {
+        Optional<ProductOption> updatedOption = service.updateGroupId(id, groupId);
+        return updatedOption.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
+    }
+
     @PutMapping("/change/{id}")
     public ResponseEntity<ProductOption> update(@PathVariable int id, @RequestBody ProductOption option) {
         Optional<ProductOption> updatedOption = service.update(id, option);

@@ -37,10 +37,19 @@ public class ProductOptionGroupController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
+
+    /*
+        TODO::
+            Напоминаю:
+                Сущность Option НЕ может принадлежать более чем одной группе. Думаю, понятно, почему, но чисто на всякий.
+        TODO
+    */
     @GetMapping("/find/{groupId}/options")
     public ResponseEntity<List<ProductOption>> getOptionsByGroupId(@PathVariable int groupId) {
         List<ProductOption> options = productOptionService.findByGroupId(groupId);
-        return ResponseEntity.ok(options);
+        if (options.isEmpty())
+            return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(options, HttpStatus.OK);
     }
 
     @PostMapping("/add")
@@ -48,6 +57,12 @@ public class ProductOptionGroupController {
         Optional<ProductOptionGroup> savedOptionGroup = productOptionGroupService.addNew(optionGroup);
         return savedOptionGroup.map(value -> new ResponseEntity<>(value, HttpStatus.CREATED))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
+    }
+
+    @PutMapping("/change/{id}/propertiesId")
+    public ResponseEntity<ProductOptionGroup> updatePropertiesId(@PathVariable int id, @RequestParam int propertiesId) {
+        Optional<ProductOptionGroup> optionGroup = productOptionGroupService.updatePropertiesId(id, propertiesId);
+        return optionGroup.map(productOptionGroup -> new ResponseEntity<>(productOptionGroup, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
     @PutMapping("/change/{id}")
