@@ -1,6 +1,7 @@
 package com.example.pj_webshop.controllers.products;
 
 import com.example.pj_webshop.entities.models.products.Product;
+import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.services.products.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,12 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping("/find/{id}/properties")
+    public ResponseEntity<ProductProperties> getPropertiesById(@PathVariable int id) {
+        Optional<ProductProperties> properties = productService.findProductPropertiesById(id);
+        return properties.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
     @GetMapping("/find/{id}")

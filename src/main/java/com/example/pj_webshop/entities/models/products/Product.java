@@ -22,8 +22,11 @@ public class Product {
     @Column(name = "product_name")
     private String productName;
 
-    @Column(name = "product_properties")
-    private String productProperties;
+    @Column(name = "properties_id")
+    private int productPropertiesId;
+
+    @Column(name = "product_decsription")
+    private String productDescription;
 
     @Column(precision = 7, scale = 2, name = "price")
     private BigDecimal price;
