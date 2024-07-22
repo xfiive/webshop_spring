@@ -72,6 +72,7 @@ public class ProductService {
 
         var existingProduct = existingProductOpt.get();
 
+        existingProduct.setProductPropertiesId(product.getProductPropertiesId());
         existingProduct.setProductId(product.getProductId());
         existingProduct.setProductName(product.getProductName());
         existingProduct.setProductDescription(product.getProductDescription());
