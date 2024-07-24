@@ -32,6 +32,10 @@ public class ProductOptionGroupService {
         return repository.findById(id);
     }
 
+    public List<ProductOptionGroup> findByProductPropertiesId(int productPropertiesId) {
+        return repository.findByProductPropertiesId(productPropertiesId);
+    }
+
     @Transactional
     public Optional<ProductOptionGroup> addNew(@NotNull ProductOptionGroup optionGroup) {
         if (optionGroup.getProductOptions() != null) {
@@ -76,21 +80,4 @@ public class ProductOptionGroupService {
         productOptionGroup.setProductPropertiesId(newProperties.get().getProductPropertiesId());
         return Optional.of(repository.saveAndFlush(productOptionGroup));
     }
-
-//    @Transactional
-//    public Optional<ProductOption> updateGroupId(int id, int newGroupId) {
-//        Optional<ProductOption> optionalProductOption = productOptionRepository.findById(id);
-//
-//        if (optionalProductOption.isEmpty())
-//            return Optional.empty();
-//
-//        ProductOption productOption = optionalProductOption.get();
-//        Optional<ProductOptionGroup> newGroup = productOptionGroupRepository.findById(newGroupId);
-//
-//        if (newGroup.isEmpty())
-//            return Optional.empty();
-//
-//        productOption.setGroupId(newGroup.get().getProductOptionGroupId());
-//        return Optional.of(productOptionRepository.saveAndFlush(productOption));
-//    }
 }

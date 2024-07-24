@@ -1,9 +1,11 @@
 package com.example.pj_webshop.services.products;
 
+import com.example.pj_webshop.entities.models.dto.ProductDTO;
+import com.example.pj_webshop.entities.models.dto.ProductOptionGroupDTO;
+import com.example.pj_webshop.entities.models.dto.ProductPropertiesDTO;
 import com.example.pj_webshop.entities.models.products.Product;
 import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
-import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
 import com.example.pj_webshop.repositories.products.ProductRepository;
 import jakarta.persistence.EntityManager;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -24,10 +27,8 @@ import java.util.Optional;
 public class ProductPropertiesService {
 
     private final ProductPropertiesRepository repository;
+    private final ProductOptionGroupService productOptionGroupService;
     private final ProductRepository productRepository;
-    private final ProductService productService;
-    private final ProductPropertiesRepository productPropertiesRepository;
-    private final ProductOptionGroupRepository productOptionGroupRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,6 +39,49 @@ public class ProductPropertiesService {
 
     public Optional<ProductProperties> findById(int id) {
         return repository.findById(id);
+    }
+
+    public Optional<ProductPropertiesDTO> findWithGroupsById(int id) {
+        Optional<ProductProperties> properties = repository.findById(id);
+        properties.ifPresent(this::initializeLazyFields);
+        return properties.map(this::convertToDto);
+    }
+
+    private void initializeLazyFields(@NotNull ProductProperties properties) {
+        List<ProductOptionGroup> groups = productOptionGroupService.findByProductPropertiesId(properties.getProductPropertiesId());
+        properties.getProductOptionGroups().clear();
+        properties.getProductOptionGroups().addAll(groups);
+        properties.getProduct().getProductName();
+    }
+
+
+    private @NotNull ProductPropertiesDTO convertToDto(@NotNull ProductProperties properties) {
+        ProductPropertiesDTO dto = new ProductPropertiesDTO();
+        dto.setProductPropertiesId(properties.getProductPropertiesId());
+        dto.setDescription(properties.getDescription());
+        dto.setProduct(convertToDto(properties.getProduct()));
+        dto.setProductOptionGroups(properties.getProductOptionGroups().stream()
+                .map(this::convertToDto).collect(Collectors.toList()));
+        return dto;
+    }
+
+    private @NotNull ProductDTO convertToDto(@NotNull Product product) {
+        ProductDTO dto = new ProductDTO();
+        dto.setProductId(product.getProductId());
+        dto.setProductName(product.getProductName());
+        dto.setProductImage(product.getProductImage());
+        dto.setPrice(product.getPrice());
+        dto.setProductDescription(product.getProductDescription());
+        return dto;
+    }
+
+    private @NotNull ProductOptionGroupDTO convertToDto(@NotNull ProductOptionGroup group) {
+        ProductOptionGroupDTO dto = new ProductOptionGroupDTO();
+        dto.setProductOptionGroupId(group.getProductOptionGroupId());
+        dto.setName(group.getName());
+        dto.setRequired(group.isRequired());
+        dto.setGroupModificationMode(group.getGroupModificationMode().name());
+        return dto;
     }
 
     public Optional<ProductProperties> addNew(@NotNull ProductProperties properties) {
@@ -56,7 +100,6 @@ public class ProductPropertiesService {
         return Optional.of(mergedProperties);
     }
 
-    @Transactional
     public Optional<ProductProperties> update(int id, ProductProperties newProperties) {
         return repository.findById(id).map(existingProperties -> {
             existingProperties.setDescription(newProperties.getDescription());
@@ -81,9 +124,5 @@ public class ProductPropertiesService {
         }
         repository.deleteById(id);
         return true;
-    }
-
-    public List<ProductOptionGroup> findGroupsByOptionsId(int propertiesId) {
-        return productOptionGroupRepository.findByProductPropertiesId(propertiesId);
     }
 }
