@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -31,6 +32,7 @@ public class ProductProperties {
     @JoinColumn(name = "product_properties_id")
     @JsonIgnore
     @Lazy
-    private List<ProductOptionGroup> productOptionGroups;
+    private List<ProductOptionGroup> productOptionGroups = new ArrayList<>();
+
 
 }
