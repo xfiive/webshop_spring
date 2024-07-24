@@ -38,12 +38,6 @@ public class ProductOptionGroupController {
     }
 
 
-    /*
-        TODO::
-            Напоминаю:
-                Сущность Option НЕ может принадлежать более чем одной группе. Думаю, понятно, почему, но чисто на всякий.
-        TODO
-    */
     @GetMapping("/find/{groupId}/options")
     public ResponseEntity<List<ProductOption>> getOptionsByGroupId(@PathVariable int groupId) {
         List<ProductOption> options = productOptionService.findByGroupId(groupId);

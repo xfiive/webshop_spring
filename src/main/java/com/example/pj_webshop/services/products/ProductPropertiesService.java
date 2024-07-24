@@ -1,11 +1,14 @@
 package com.example.pj_webshop.services.products;
 
 import com.example.pj_webshop.entities.models.dto.ProductDTO;
+import com.example.pj_webshop.entities.models.dto.ProductOptionDTO;
 import com.example.pj_webshop.entities.models.dto.ProductOptionGroupDTO;
 import com.example.pj_webshop.entities.models.dto.ProductPropertiesDTO;
 import com.example.pj_webshop.entities.models.products.Product;
+import com.example.pj_webshop.entities.models.products.ProductOption;
 import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
+import com.example.pj_webshop.repositories.products.ProductOptionRepository;
 import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
 import com.example.pj_webshop.repositories.products.ProductRepository;
 import jakarta.persistence.EntityManager;
@@ -28,6 +31,7 @@ public class ProductPropertiesService {
 
     private final ProductPropertiesRepository repository;
     private final ProductOptionGroupService productOptionGroupService;
+    private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
 
     @PersistenceContext
@@ -48,12 +52,12 @@ public class ProductPropertiesService {
     }
 
     private void initializeLazyFields(@NotNull ProductProperties properties) {
-        List<ProductOptionGroup> groups = productOptionGroupService.findByProductPropertiesId(properties.getProductPropertiesId());
-        properties.getProductOptionGroups().clear();
-        properties.getProductOptionGroups().addAll(groups);
         properties.getProduct().getProductName();
+        properties.getProductOptionGroups().forEach(group -> {
+            List<ProductOption> options = productOptionRepository.findByGroupId(group.getProductOptionGroupId());
+            group.setProductOptions(options);
+        });
     }
-
 
     private @NotNull ProductPropertiesDTO convertToDto(@NotNull ProductProperties properties) {
         ProductPropertiesDTO dto = new ProductPropertiesDTO();
@@ -81,6 +85,18 @@ public class ProductPropertiesService {
         dto.setName(group.getName());
         dto.setRequired(group.isRequired());
         dto.setGroupModificationMode(group.getGroupModificationMode().name());
+        dto.setProductOptions(group.getProductOptions().stream()
+                .map(this::convertToDto).collect(Collectors.toList()));
+        return dto;
+    }
+
+    private @NotNull ProductOptionDTO convertToDto(@NotNull ProductOption option) {
+        ProductOptionDTO dto = new ProductOptionDTO();
+        dto.setProductOptionId(option.getProductOptionId());
+        dto.setName(option.getName());
+        dto.setImage(option.getImage());
+        dto.setPrice(option.getPrice());
+        dto.setAccessible(option.isAccessible());
         return dto;
     }
 
