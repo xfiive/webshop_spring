@@ -32,9 +32,8 @@ public class ProductOptionGroup {
     @Enumerated(EnumType.STRING)
     private GroupModificationMode groupModificationMode;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "product_option_group_id")
     @JsonIgnore
     private List<ProductOption> productOptions;
-
 }

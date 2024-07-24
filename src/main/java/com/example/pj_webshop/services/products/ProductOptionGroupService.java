@@ -1,5 +1,6 @@
 package com.example.pj_webshop.services.products;
 
+import com.example.pj_webshop.entities.models.products.ProductOption;
 import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
@@ -32,8 +33,9 @@ public class ProductOptionGroupService {
         return repository.findById(id);
     }
 
-    public List<ProductOptionGroup> findByProductPropertiesId(int productPropertiesId) {
-        return repository.findByProductPropertiesId(productPropertiesId);
+    @Transactional
+    public List<ProductOption> findOptionsByGroupId(int groupId) {
+        return optionRepository.findByGroupId(groupId);
     }
 
     @Transactional
