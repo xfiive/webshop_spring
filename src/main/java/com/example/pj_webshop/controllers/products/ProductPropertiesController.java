@@ -1,6 +1,6 @@
 package com.example.pj_webshop.controllers.products;
 
-import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
+import com.example.pj_webshop.entities.models.dto.ProductPropertiesDTO;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.services.products.ProductPropertiesService;
 import com.example.pj_webshop.services.products.ProductService;
@@ -40,14 +40,14 @@ public class ProductPropertiesController {
     }
 
     @GetMapping("/find/{propertiesId}/groups")
-    public ResponseEntity<List<ProductOptionGroup>> findGroupsByPropertiesId(@PathVariable int propertiesId) {
-        List<ProductOptionGroup> groups = service.findGroupsByOptionsId(propertiesId);
-        if (groups.isEmpty())
-            return ResponseEntity.noContent().build();
-        return new ResponseEntity<>(groups, HttpStatus.OK);
+    @Transactional
+    public ResponseEntity<ProductPropertiesDTO> findWithGroupsById(@PathVariable int propertiesId) {
+        Optional<ProductPropertiesDTO> properties = service.findWithGroupsById(propertiesId);
+        return properties.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
-        /*
+    /*
     Когда добавляешь, то формируй json типо этого, так как оно добавит продукт в базу.
     Если укажешь там Id продукта, который уже существует, то оно обновит его, т.е. перезапишет его поля.
     То же самое на /change
