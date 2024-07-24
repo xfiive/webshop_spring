@@ -1,7 +1,8 @@
 <template>
     <div>
-        <AdminProductList :products="productList" @edit="handleEdit" @delete="handleDelete" @add="handleAdd"
-                          @propCreate="handlePropCreate" />
+        <AdminProductList :products="productList" @edit="handleEdit"
+                          @delete="handleDelete" @add="handleAdd"
+                          @propCreate="handlePropCreate" @propView="handlePropView" />
         <Modal :show="viewModalAdd" @close="viewModalAdd = false">
             <template #body>
                 <form @submit.prevent="submitAddForm" class="max-w-lg mx-auto">
@@ -86,16 +87,29 @@
                 </div>
             </template>
         </Modal>
-        <Modal :show="viewModalPropCreate" @close="viewModalPropCreate = false">
+        <ModalWide :show="viewModalPropCreate" @close="viewModalPropCreate = false">
             <template #body>
                 <AdminProdPropCreate @onSubmit="submitCreateProps" />
             </template>
-        </Modal>
+        </ModalWide>
+        <ModalWide :show="viewModalPropView" @close="viewModalPropView = false">
+            <template #body>
+                <AdminProdPropView :product="selectedProduct"
+                                   :product-properties="selectedProperties">
+                </AdminProdPropView>
+            </template>
+        </ModalWide>
     </div>
 </template>
 
 <script lang="ts" setup>
-import type { Product, ProductOptionGroup, ProductOption, GroupModificationMode } from '~/models/product';
+import type {
+    Product,
+    ProductOptionGroup,
+    ProductOption,
+    GroupModificationMode,
+    ProductProperties
+} from '~/models/product';
 import useApiService from '~/composables/useApiService';
 
 definePageMeta({
@@ -106,11 +120,13 @@ const api = useApi();
 const service = useApiService();
 
 const selectedProduct = ref<Product>({} as Product);
+const selectedProperties = ref<ProductProperties>({} as ProductProperties);
 
 const viewModalAdd = ref<boolean>(false);
 const viewModalEdit = ref<boolean>(false);
 const viewModalDel = ref<boolean>(false);
 const viewModalPropCreate = ref(false);
+const viewModalPropView = ref(false);
 
 const productList = ref<Product[]>([]);
 
@@ -130,6 +146,7 @@ const findProduct = (productId: number) => selectedProduct.value = ({
         productList
             .value.find(p => p.productId === productId)
 } || {}) as Product;
+const findProperties = async () => selectedProperties.value = await service.prodProp.getById(selectedProduct.value.productPropertiesId);
 
 const handleAdd = () => {
     selectedProduct.value = {
@@ -153,6 +170,10 @@ const handleDelete = (productId: number) => {
 const handlePropCreate = (productId: number) => {
     findProduct(productId);
     viewModalPropCreate.value = true;
+};
+const handlePropView = (productId: number) => {
+    findProduct(productId);
+    findProperties().then(() => viewModalPropView.value = true);
 };
 
 const submitAddForm = async () => {

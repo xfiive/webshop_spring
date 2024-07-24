@@ -16,7 +16,8 @@
         <img :src="product.productImage" alt="Product Image" class="w-full h-48 object-cover mb-4">
         <h2 class="text-xl font-semibold mb-2">{{ product.productName }}</h2>
         <p class="text-md">Properties ID:
-            <b v-if="product.productPropertiesId">{{ product.productPropertiesId }}</b>
+            <b v-if="product.productPropertiesId" @click="viewProps(product.productId)"
+            >{{ product.productPropertiesId }}</b>
             <button v-else @click="createProps(product.productId)" class="text-blue-500 hover:text-green-700">
                 Create
             </button>
@@ -33,7 +34,7 @@ import type { Product } from '~/models/product';
 
 defineProps<{ product: Product }>();
 
-const emit = defineEmits(['edit', 'delete', 'propCreate']);
+const emit = defineEmits(['edit', 'delete', 'propCreate', 'propView']);
 
 const editProduct = (productId: number) => {
     emit('edit', productId);
@@ -46,5 +47,9 @@ const deleteProduct = (productId: number) => {
 const createProps = (productId: number) => {
     emit('propCreate', productId);
 };
+
+const viewProps = (productId: number) => {
+    emit('propView', productId);
+}
 
 </script>

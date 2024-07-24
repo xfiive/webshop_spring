@@ -67,24 +67,36 @@ class ProductPropertiesModule extends ServiceFactory {
             }
         }
 
-        /* const newProduct = await api.product.put(product.productId, {
-             productPropertiesId: newProp.productPropertiesId,
-             productId: product.productId,
-             productDescription: product.productDescription,
-             price: product.price,
-             productImage: product.productImage,
-             productName: product.productName
-         });*/
-/*
+        const newProduct = await api.product.put(product.productId, {
+            productPropertiesId: newProp.productPropertiesId,
+            productId: product.productId,
+            productDescription: product.productDescription,
+            price: product.price,
+            productImage: product.productImage,
+            productName: product.productName
+        });
+        
         if (newProp.productPropertiesId !== newProduct.productPropertiesId) {
             await revertOptions();
             await revertGroups();
             await revertProp();
 
             throw createError({ message: 'Failed to update productPropertiesId in product', data: newProduct });
-        }*/
+        }
     }
 
+    async getById(id: number): Promise<ProductProperties>{
+        const prop = await this.api.prodProp.prop.getById(id);
+
+        prop.productOptionGroups = await this.api.prodProp.prop.getGroupsByPropertiesId(id);
+
+        for (let idx = 0; idx < prop.productOptionGroups.length; idx++) {
+            let group = prop.productOptionGroups[idx];
+            group.productOptions = await this.api.prodProp.group.getOptionsByGroupId(group.productOptionGroupId);
+        }
+
+        return prop;
+    }
 }
 
 export default ProductPropertiesModule;

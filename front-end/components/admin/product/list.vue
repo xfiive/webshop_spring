@@ -8,7 +8,9 @@
             <AdminProduct v-for="product in products" :key="product.productId" :product="product"
                           @edit="editProduct"
                           @delete="deleteProduct"
-                          @propCreate="createProp" />
+                          @propCreate="createProp"
+                          @propView="emit('propView', product.productId)"
+            />
         </div>
         <p v-else class="text-center">No products available.</p>
     </div>
@@ -21,7 +23,7 @@ const props = defineProps<{
     products: Product[]
 }>();
 
-const emit = defineEmits(['edit', 'delete', 'add', 'propCreate']);
+const emit = defineEmits(['edit', 'delete', 'add', 'propCreate', 'propView']);
 
 const editProduct = (productId: number) => {
     emit('edit', productId);
