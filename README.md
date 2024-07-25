@@ -1,1 +1,1 @@
-Webshop for some small business, security through Spring Security, emails through Spring Mails, psql as a database, connects with frontend on vue.js(probably will also post it in a few days or weeks)
+Webshop for some small business, security through Spring Security, emails through Spring Mails, psql as a database, connects with frontend on Vue.js
