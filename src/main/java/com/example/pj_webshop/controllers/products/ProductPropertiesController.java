@@ -33,36 +33,11 @@ public class ProductPropertiesController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<ProductProperties> getById(@PathVariable int id) {
-        Optional<ProductProperties> properties = service.findById(id);
+    public ResponseEntity<ProductPropertiesDTO> getById(@PathVariable int id) {
+        Optional<ProductPropertiesDTO> properties = service.findWithGroupsById(id);
         return properties.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
-
-    @GetMapping("/find/{propertiesId}/groups")
-    @Transactional
-    public ResponseEntity<ProductPropertiesDTO> findWithGroupsById(@PathVariable int propertiesId) {
-        Optional<ProductPropertiesDTO> properties = service.findWithGroupsById(propertiesId);
-        return properties.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
-    }
-
-    /*
-    Когда добавляешь, то формируй json типо этого, так как оно добавит продукт в базу.
-    Если укажешь там Id продукта, который уже существует, то оно обновит его, т.е. перезапишет его поля.
-    То же самое на /change
-    {
-        "productPropertiesId": 1,
-        "product": {
-            "productId": 1,
-            "productName": "Laptop",
-            "productProperties": "Some laptop",
-            "price": 1200.00,
-            "productImage": "AAABBBCCDDDEEE"
-        },
-        "description": "Properties for a Laptop"
-    }
-     */
 
     @PostMapping("/add")
     public ResponseEntity<ProductProperties> add(@RequestBody ProductProperties properties) {
@@ -78,9 +53,6 @@ public class ProductPropertiesController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
 
-    /*
-        При удалении ProductProperties удаляет и сам Product
-     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         boolean isDeleted = service.delete(id);

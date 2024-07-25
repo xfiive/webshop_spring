@@ -28,11 +28,9 @@ public class ProductProperties {
     @Column
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_properties_id")
     @JsonIgnore
     @Lazy
     private List<ProductOptionGroup> productOptionGroups = new ArrayList<>();
-
-
 }
