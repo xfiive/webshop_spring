@@ -83,6 +83,7 @@ public class ProductPropertiesService {
         ProductOptionGroupDTO dto = new ProductOptionGroupDTO();
         dto.setProductOptionGroupId(group.getProductOptionGroupId());
         dto.setName(group.getName());
+        dto.setAvailableOptionsState(group.getAvailableOptionsState().toString());
         dto.setRequired(group.isRequired());
         dto.setGroupModificationMode(group.getGroupModificationMode().name());
         dto.setProductOptions(group.getProductOptions().stream()
