@@ -22,6 +22,16 @@
             </select>
         </div>
 
+        <div class="mb-4">
+            <label for="availableState" class="block text-sm font-medium text-gray-700">Available State</label>
+            <select id="availableState" v-model="group.availableOptionsState" required
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                <option value="">None</option>
+                <option value="SINGLE_OPTION_ALLOWED">Single Option</option>
+                <option value="MULTIPLE_OPTIONS_ALLOWED">Multiple Option</option>
+            </select>
+        </div>
+
         <!-- Product Options Management -->
         <div>
             <h3 class="text-lg font-semibold">Product Options</h3>
@@ -44,11 +54,11 @@ const { group } = defineProps<{ group: ProductOptionGroup }>();
 
 const addOption = () => {
     group.productOptions.push({
-        productOptionId: -1,
+        productOptionId: 0,
         groupId: 0,
         name: 'New Option',
         image: '',
-        price: 1,
+        price: 0,
         accessible: true
     });
 };

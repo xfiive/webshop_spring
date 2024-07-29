@@ -16,7 +16,8 @@ export type ProductProperties = {
 };
 
 
-export type GroupModificationMode = 'modifiable' | 'unmodifiable' | '' | 'MODIFIABLE' | 'UNMODIFIABLE';
+export type GroupModificationMode = /*'modifiable' | 'unmodifiable' | */'' | 'MODIFIABLE' | 'UNMODIFIABLE';
+export type AvailableOptionsState = '' | 'SINGLE_OPTION_ALLOWED' | 'MULTIPLE_OPTIONS_ALLOWED';
 
 
 export type ProductOptionGroup = {
@@ -25,6 +26,7 @@ export type ProductOptionGroup = {
     name: string;
     isRequired: boolean;
     groupModificationMode: GroupModificationMode;  // Enum type to be defined
+    availableOptionsState: AvailableOptionsState;
     productOptions: ProductOption[];  // Assuming these types are already defined
 };
 

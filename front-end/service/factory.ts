@@ -1,4 +1,5 @@
-import type { IApiInstance } from '~/composables/useApi';
+import type { IApiInstance } from '~/plugins/api';
+
 
 class ServiceFactory {
     api: IApiInstance;

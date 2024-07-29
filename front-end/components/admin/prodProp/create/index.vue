@@ -39,6 +39,7 @@ const addGroup = () => {
         name: '',
         isRequired: false,
         groupModificationMode: '',
+        availableOptionsState: '',
         productOptions: [],
         productOptionGroupId: 0,
         productPropertiesId: 0

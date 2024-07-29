@@ -192,15 +192,15 @@ const submitDeleteForm = async () => {
 };
 const submitCreateProps = async (groups: ProductOptionGroup[]) => {
 
-    viewModalPropCreate.value = false;
 
-    await service.prodProp.pushRaw({
+    await api.prodProp.prop.add({
         product: selectedProduct.value,
         productPropertiesId: 0,
         productOptionGroups: groups,
         description: ''
     });
 
+    viewModalPropCreate.value = false;
 
     await fetchProducts();
 };

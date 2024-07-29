@@ -4,8 +4,10 @@ import type { GroupModificationMode, ProductProperties, Product } from '~/models
 class ProductPropertiesModule extends ServiceFactory {
 
     async pushRaw(propObj: ProductProperties) {
-        console.log(JSON.stringify(propObj));
-        return;
+        // console.log(JSON.stringify(propObj));
+        // return;
+
+        throw createError('deprecated');
 
         const product = propObj.product;
         const api = this.api;
