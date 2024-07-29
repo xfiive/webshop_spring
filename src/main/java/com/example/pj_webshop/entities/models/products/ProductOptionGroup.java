@@ -32,7 +32,7 @@ public class ProductOptionGroup {
     @Enumerated(EnumType.STRING)
     private GroupModificationMode groupModificationMode;
 
-    @Column(name = "available_options_state")
+    @Column(name = "available_options_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private AvailableOptionsState availableOptionsState;
 
