@@ -40,8 +40,8 @@ const addGroup = () => {
         isRequired: false,
         groupModificationMode: '',
         productOptions: [],
-        productOptionGroupId: -1,
-        productPropertiesId: -1
+        productOptionGroupId: 0,
+        productPropertiesId: 0
     });
 };
 

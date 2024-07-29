@@ -1,10 +1,10 @@
 <template>
     <div class="product-properties p-6 bg-white shadow-md rounded-lg">
         <div class="product-header text-center">
-            <h1 class="text-3xl font-bold mb-4">{{ product.productName }}</h1>
-            <img :src="product.productImage" alt="Product Image" class="w-48 h-48 mx-auto mb-4" />
-            <p class="text-gray-600 mb-4">{{ product.productDescription }}</p>
-            <p class="text-green-600 font-bold text-xl">Price: ${{ product.price.toFixed(2) }}</p>
+            <h1 class="text-3xl font-bold mb-4">{{ productProperties.product.productName }}</h1>
+            <img :src="productProperties.product.productImage" alt="Product Image" class="w-48 h-48 mx-auto mb-4" />
+            <p class="text-gray-600 mb-4">{{ productProperties.product.productDescription }}</p>
+            <p class="text-green-600 font-bold text-xl">Price: ${{ productProperties.product.price.toFixed(2) }}</p>
         </div>
         <div class="option-groups mt-8">
             <div v-for="group in productProperties.productOptionGroups" :key="group.productOptionGroupId" class="mb-6">
@@ -26,7 +26,7 @@
 
 import type { Product, ProductProperties } from '~/models/product';
 
-defineProps<{ product: Product, productProperties: ProductProperties }>();
+defineProps<{ productProperties: ProductProperties }>();
 </script>
 
 <style scoped>

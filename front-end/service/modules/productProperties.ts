@@ -4,6 +4,9 @@ import type { GroupModificationMode, ProductProperties, Product } from '~/models
 class ProductPropertiesModule extends ServiceFactory {
 
     async pushRaw(propObj: ProductProperties) {
+        console.log(JSON.stringify(propObj));
+        return;
+
         const product = propObj.product;
         const api = this.api;
 
@@ -87,6 +90,7 @@ class ProductPropertiesModule extends ServiceFactory {
 
     async getById(id: number): Promise<ProductProperties>{
         const prop = await this.api.prodProp.prop.getById(id);
+/*
 
         prop.productOptionGroups = await this.api.prodProp.prop.getGroupsByPropertiesId(id);
 
@@ -94,6 +98,7 @@ class ProductPropertiesModule extends ServiceFactory {
             let group = prop.productOptionGroups[idx];
             group.productOptions = await this.api.prodProp.group.getOptionsByGroupId(group.productOptionGroupId);
         }
+*/
 
         return prop;
     }

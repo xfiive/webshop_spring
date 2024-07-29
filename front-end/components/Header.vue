@@ -14,7 +14,8 @@
 			<div class="header__nav">
 <!--				<NuxtLink @click="toggleMenu" class="nav_link">menu</NuxtLink>-->
 				<NuxtLink to="#" class="nav_link">bundles</NuxtLink>
-				<NuxtLink to="#" class="nav_link">occassion</NuxtLink>
+				<NuxtLink to="/shop" class="nav_link">shop</NuxtLink>
+				<NuxtLink to="/shop" class="nav_link">shop</NuxtLink>
 				<NuxtLink to="/" class="nav_link header__logo">parjorie<br>creations</NuxtLink>
 				<NuxtLink to="#" class="nav_link">ideas</NuxtLink>
 				<NuxtLink to="#" class="nav_link">abous us</NuxtLink>
