@@ -1,6 +1,5 @@
 package com.example.pj_webshop.entities.models.products;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,18 +19,18 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
 
-    @Column(name = "product_name")
+    @Column(name = "product_name", length = 10485760)
     private String productName;
 
-    @Column(name = "properties_id")
+    @Column(name = "properties_id", length = 10485760)
     private int productPropertiesId;
 
-    @Column(name = "product_decsription")
+    @Column(name = "product_decsription", length = 10485760)
     private String productDescription;
 
     @Column(precision = 7, scale = 2, name = "price")
     private BigDecimal price;
 
-    @Column(name = "product_image", columnDefinition = "TEXT")
+    @Column(name = "product_image", columnDefinition = "TEXT", length = 10485760)
     private String productImage;
 }

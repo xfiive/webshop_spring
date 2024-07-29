@@ -25,7 +25,7 @@ public class ProductProperties {
     @JoinColumn(name = "product_id", referencedColumnName = "productId")
     private Product product;
 
-    @Column
+    @Column(length = 10485760)
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL)
