@@ -104,7 +104,7 @@ public class ProductPropertiesService {
         dto.setName(option.getName());
         dto.setImage(option.getImage());
         dto.setPrice(option.getPrice());
-        dto.setProductOptionGroupId(option.getGroupId());
+        dto.setGroupId(option.getGroupId());
         dto.setAccessible(option.isAccessible());
         return dto;
     }
@@ -149,14 +149,12 @@ public class ProductPropertiesService {
         entity.setName(dto.getName());
         entity.setImage(dto.getImage());
         entity.setPrice(dto.getPrice());
-        entity.setGroupId(dto.getProductOptionGroupId());
+        entity.setGroupId(dto.getGroupId());
         entity.setAccessible(dto.isAccessible());
         return entity;
     }
 
     public Optional<ProductPropertiesDTO> addNew(@NotNull ProductPropertiesDTO propertiesDTO) {
-//        log.info("Adding new ProductProperties with ID: {}", propertiesDTO.getProductPropertiesId());
-//        log.info("ProductOptionGroups size before save: {}", propertiesDTO.getProductOptionGroups().size());
 
         ProductProperties properties = convertToEntity(propertiesDTO);
 
@@ -175,22 +173,22 @@ public class ProductPropertiesService {
             properties.setProduct(product);
         }
 
-        properties.getProductOptionGroups().forEach(group -> group.setProductPropertiesId(propertiesSaved.getProductPropertiesId()));
-
-//        log.info("ProductOptionGroups size after save: {}", properties.getProductOptionGroups().size());
+        properties.getProductOptionGroups().forEach(group -> {
+            group.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
+        });
 
         if (properties.getProductOptionGroups() != null) {
             for (ProductOptionGroup group : properties.getProductOptionGroups()) {
+                ProductOptionGroup savedGroup = productOptionGroupRepository.saveAndFlush(group);
                 if (group.getProductOptions() != null) {
                     List<ProductOption> options = new ArrayList<>();
                     for (ProductOption option : group.getProductOptions()) {
-                        option.setGroupId(group.getProductOptionGroupId());
+                        option.setGroupId(savedGroup.getProductOptionGroupId());
                         option = productOptionRepository.saveAndFlush(option);
                         options.add(option);
                     }
                     group.setProductOptions(options);
                 }
-                productOptionGroupRepository.saveAndFlush(group);
             }
         }
 
