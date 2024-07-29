@@ -3,7 +3,6 @@ package com.example.pj_webshop.controllers.products;
 import com.example.pj_webshop.entities.models.dto.ProductPropertiesDTO;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.services.products.ProductPropertiesService;
-import com.example.pj_webshop.services.products.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products/properties")
@@ -21,15 +21,17 @@ import java.util.Optional;
 public class ProductPropertiesController {
 
     private final ProductPropertiesService service;
-    private final ProductService productService;
 
     @GetMapping("/find/all")
-    public ResponseEntity<List<ProductProperties>> getAll() {
+    public ResponseEntity<List<ProductPropertiesDTO>> getAll() {
         List<ProductProperties> properties = service.findAll();
-        if (properties.isEmpty()) {
+        List<ProductPropertiesDTO> propertiesDTO = properties.stream()
+                .map(service::convertToDto)
+                .collect(Collectors.toList());
+        if (propertiesDTO.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(properties, HttpStatus.OK);
+        return new ResponseEntity<>(propertiesDTO, HttpStatus.OK);
     }
 
     @GetMapping("/find/{id}")
@@ -40,15 +42,15 @@ public class ProductPropertiesController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ProductProperties> add(@RequestBody ProductProperties properties) {
-        Optional<ProductProperties> savedProperties = service.addNew(properties);
+    public ResponseEntity<ProductPropertiesDTO> add(@RequestBody ProductPropertiesDTO propertiesDTO) {
+        Optional<ProductPropertiesDTO> savedProperties = service.addNew(propertiesDTO);
         return savedProperties.map(value -> new ResponseEntity<>(value, HttpStatus.CREATED))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.CONFLICT));
     }
 
     @PutMapping("/change/{id}")
-    public ResponseEntity<ProductProperties> update(@PathVariable int id, @RequestBody ProductProperties properties) {
-        Optional<ProductProperties> updatedProperties = service.update(id, properties);
+    public ResponseEntity<ProductPropertiesDTO> update(@PathVariable int id, @RequestBody ProductPropertiesDTO propertiesDTO) {
+        Optional<ProductPropertiesDTO> updatedProperties = service.update(id, propertiesDTO);
         return updatedProperties.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
