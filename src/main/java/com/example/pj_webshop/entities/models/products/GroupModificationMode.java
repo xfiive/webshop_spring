@@ -1,11 +1,14 @@
 package com.example.pj_webshop.entities.models.products;
 
+import lombok.Getter;
+
+@Getter
 public enum GroupModificationMode {
     MODIFIABLE("modifiable"),
     UNMODIFIABLE("unmodifiable"),
     UNKNOWN("");
 
-    private String command;
+    private final String command;
 
     GroupModificationMode(String command) {
         this.command = command;
@@ -20,7 +23,4 @@ public enum GroupModificationMode {
         return UNKNOWN;
     }
 
-    public String getCommand() {
-        return command;
-    }
 }

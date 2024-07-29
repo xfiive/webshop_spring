@@ -32,6 +32,10 @@ public class ProductOptionGroup {
     @Enumerated(EnumType.STRING)
     private GroupModificationMode groupModificationMode;
 
+    @Column(name = "available_options_state")
+    @Enumerated(EnumType.STRING)
+    private AvailableOptionsState availableOptionsState;
+
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "product_option_group_id")
     @JsonIgnore

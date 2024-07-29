@@ -8,6 +8,7 @@ import com.example.pj_webshop.entities.models.products.Product;
 import com.example.pj_webshop.entities.models.products.ProductOption;
 import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
+import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductOptionRepository;
 import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
 import com.example.pj_webshop.repositories.products.ProductRepository;
@@ -29,8 +30,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductPropertiesService {
 
-    private final ProductPropertiesRepository repository;
     private final ProductOptionGroupService productOptionGroupService;
+    private final ProductOptionService productOptionService;
+
+    private final ProductOptionGroupRepository productOptionGroupRepository;
+    private final ProductPropertiesRepository repository;
     private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
 
@@ -83,6 +87,7 @@ public class ProductPropertiesService {
         ProductOptionGroupDTO dto = new ProductOptionGroupDTO();
         dto.setProductOptionGroupId(group.getProductOptionGroupId());
         dto.setName(group.getName());
+        dto.setAvailableOptionsState(group.getAvailableOptionsState().toString());
         dto.setRequired(group.isRequired());
         dto.setGroupModificationMode(group.getGroupModificationMode().name());
         dto.setProductOptions(group.getProductOptions().stream()
@@ -111,10 +116,25 @@ public class ProductPropertiesService {
             properties.setProduct(product);
         }
 
+        if (properties.getProductOptionGroups() != null) {
+            for (ProductOptionGroup group : properties.getProductOptionGroups()) {
+                if (group.getProductOptions() != null) {
+                    List<ProductOption> options = new ArrayList<>();
+                    for (ProductOption option : group.getProductOptions()) {
+                        option = productOptionRepository.saveAndFlush(option);
+                        options.add(option);
+                    }
+                    group.setProductOptions(options);
+                }
+                group = productOptionGroupRepository.saveAndFlush(group);
+            }
+        }
+
         ProductProperties mergedProperties = entityManager.merge(properties);
         repository.saveAndFlush(mergedProperties);
         return Optional.of(mergedProperties);
     }
+
 
     public Optional<ProductProperties> update(int id, ProductProperties newProperties) {
         return repository.findById(id).map(existingProperties -> {

@@ -10,5 +10,6 @@ public class ProductOptionGroupDTO {
     private String name;
     private boolean isRequired;
     private String groupModificationMode;
+    private String availableOptionsState;
     private List<ProductOptionDTO> productOptions;
 }
