@@ -22,7 +22,7 @@ public class ProductOptionGroup {
     @Column(name = "properties_id")
     private int productPropertiesId;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 10485760)
     private String name;
 
     @Column(name = "is_required")
