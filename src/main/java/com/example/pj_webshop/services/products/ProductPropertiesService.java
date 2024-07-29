@@ -13,6 +13,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductPropertiesService {
 
-    private final ProductOptionGroupService productOptionGroupService;
-    private final ProductOptionService productOptionService;
-
+    private static final Logger log = LoggerFactory.getLogger(ProductPropertiesService.class);
     private final ProductOptionGroupRepository productOptionGroupRepository;
     private final ProductPropertiesRepository repository;
     private final ProductOptionRepository productOptionRepository;
@@ -60,7 +60,8 @@ public class ProductPropertiesService {
         });
     }
 
-    private @NotNull ProductPropertiesDTO convertToDto(@NotNull ProductProperties properties) {
+    @NotNull
+    public ProductPropertiesDTO convertToDto(@NotNull ProductProperties properties) {
         ProductPropertiesDTO dto = new ProductPropertiesDTO();
         dto.setProductPropertiesId(properties.getProductPropertiesId());
         dto.setDescription(properties.getDescription());
@@ -76,6 +77,7 @@ public class ProductPropertiesService {
         dto.setProductName(product.getProductName());
         dto.setProductImage(product.getProductImage());
         dto.setPrice(product.getPrice());
+        dto.setProductPropertiesId(product.getProductPropertiesId());
         dto.setProductDescription(product.getProductDescription());
         return dto;
     }
@@ -90,6 +92,7 @@ public class ProductPropertiesService {
             dto.setAvailableOptionsState(AvailableOptionsState.UNKNOWN.toString());
         dto.setRequired(group.isRequired());
         dto.setGroupModificationMode(group.getGroupModificationMode().name());
+        dto.setProductPropertiesId(group.getProductPropertiesId());
         dto.setProductOptions(group.getProductOptions().stream()
                 .map(this::convertToDto).collect(Collectors.toList()));
         return dto;
@@ -101,56 +104,115 @@ public class ProductPropertiesService {
         dto.setName(option.getName());
         dto.setImage(option.getImage());
         dto.setPrice(option.getPrice());
+        dto.setProductOptionGroupId(option.getGroupId());
         dto.setAccessible(option.isAccessible());
         return dto;
     }
 
-    public Optional<ProductProperties> addNew(@NotNull ProductProperties properties) {
+    private @NotNull ProductProperties convertToEntity(@NotNull ProductPropertiesDTO dto) {
+        ProductProperties entity = new ProductProperties();
+        entity.setProductPropertiesId(dto.getProductPropertiesId());
+        entity.setDescription(dto.getDescription());
+        entity.setProduct(convertToEntity(dto.getProduct()));
+        entity.setProductOptionGroups(dto.getProductOptionGroups().stream()
+                .map(this::convertToEntity).collect(Collectors.toList()));
+        return entity;
+    }
+
+    private @NotNull Product convertToEntity(@NotNull ProductDTO dto) {
+        Product entity = new Product();
+        entity.setProductId(dto.getProductId());
+        entity.setProductName(dto.getProductName());
+        entity.setProductDescription(dto.getProductDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setProductPropertiesId(dto.getProductPropertiesId());
+        entity.setProductImage(dto.getProductImage());
+        return entity;
+    }
+
+    private @NotNull ProductOptionGroup convertToEntity(@NotNull ProductOptionGroupDTO dto) {
+        ProductOptionGroup entity = new ProductOptionGroup();
+        entity.setProductOptionGroupId(dto.getProductOptionGroupId());
+        entity.setName(dto.getName());
+        entity.setRequired(dto.isRequired());
+        entity.setProductPropertiesId(dto.getProductPropertiesId());
+        entity.setGroupModificationMode(GroupModificationMode.fromCommand(dto.getGroupModificationMode()));
+        entity.setAvailableOptionsState(AvailableOptionsState.valueOf(dto.getAvailableOptionsState()));
+        entity.setProductOptions(dto.getProductOptions().stream()
+                .map(this::convertToEntity).collect(Collectors.toList()));
+        return entity;
+    }
+
+    private @NotNull ProductOption convertToEntity(@NotNull ProductOptionDTO dto) {
+        ProductOption entity = new ProductOption();
+        entity.setProductOptionId(dto.getProductOptionId());
+        entity.setName(dto.getName());
+        entity.setImage(dto.getImage());
+        entity.setPrice(dto.getPrice());
+        entity.setGroupId(dto.getProductOptionGroupId());
+        entity.setAccessible(dto.isAccessible());
+        return entity;
+    }
+
+    public Optional<ProductPropertiesDTO> addNew(@NotNull ProductPropertiesDTO propertiesDTO) {
+//        log.info("Adding new ProductProperties with ID: {}", propertiesDTO.getProductPropertiesId());
+//        log.info("ProductOptionGroups size before save: {}", propertiesDTO.getProductOptionGroups().size());
+
+        ProductProperties properties = convertToEntity(propertiesDTO);
+
         if (repository.existsById(properties.getProductPropertiesId())) {
             return Optional.empty();
         }
 
+        ProductProperties mergedProperties = entityManager.merge(properties);
+        var propertiesSaved = repository.saveAndFlush(mergedProperties);
+        properties.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
+
         Product product = properties.getProduct();
         if (product != null && !productRepository.existsById(product.getProductId())) {
+            product.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
             product = productRepository.saveAndFlush(product);
             properties.setProduct(product);
         }
+
+        properties.getProductOptionGroups().forEach(group -> group.setProductPropertiesId(propertiesSaved.getProductPropertiesId()));
+
+//        log.info("ProductOptionGroups size after save: {}", properties.getProductOptionGroups().size());
 
         if (properties.getProductOptionGroups() != null) {
             for (ProductOptionGroup group : properties.getProductOptionGroups()) {
                 if (group.getProductOptions() != null) {
                     List<ProductOption> options = new ArrayList<>();
                     for (ProductOption option : group.getProductOptions()) {
+                        option.setGroupId(group.getProductOptionGroupId());
                         option = productOptionRepository.saveAndFlush(option);
                         options.add(option);
                     }
                     group.setProductOptions(options);
                 }
-                group = productOptionGroupRepository.saveAndFlush(group);
+                productOptionGroupRepository.saveAndFlush(group);
             }
         }
 
-        ProductProperties mergedProperties = entityManager.merge(properties);
-        repository.saveAndFlush(mergedProperties);
-        return Optional.of(mergedProperties);
+        return Optional.of(convertToDto(properties));
     }
 
-
-    public Optional<ProductProperties> update(int id, ProductProperties newProperties) {
+    public Optional<ProductPropertiesDTO> update(int id, ProductPropertiesDTO newPropertiesDTO) {
         return repository.findById(id).map(existingProperties -> {
-            existingProperties.setDescription(newProperties.getDescription());
-            existingProperties.setProduct(newProperties.getProduct());
+            existingProperties.setDescription(newPropertiesDTO.getDescription());
+            existingProperties.setProduct(convertToEntity(newPropertiesDTO.getProduct()));
 
             if (existingProperties.getProductOptionGroups() == null) {
                 existingProperties.setProductOptionGroups(new ArrayList<>());
             }
 
             existingProperties.getProductOptionGroups().clear();
-            if (newProperties.getProductOptionGroups() != null) {
-                existingProperties.getProductOptionGroups().addAll(newProperties.getProductOptionGroups());
+            if (newPropertiesDTO.getProductOptionGroups() != null) {
+                existingProperties.getProductOptionGroups().addAll(newPropertiesDTO.getProductOptionGroups().stream()
+                        .map(this::convertToEntity).toList());
             }
 
-            return repository.saveAndFlush(existingProperties);
+            return convertToDto(repository.saveAndFlush(existingProperties));
         });
     }
 
