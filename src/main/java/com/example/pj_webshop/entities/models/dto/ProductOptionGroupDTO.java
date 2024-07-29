@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class ProductOptionGroupDTO {
     private int productOptionGroupId;
+    private int productPropertiesId;
     private String name;
     private boolean isRequired;
     private String groupModificationMode;
