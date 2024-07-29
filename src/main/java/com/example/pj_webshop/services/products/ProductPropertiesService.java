@@ -4,10 +4,7 @@ import com.example.pj_webshop.entities.models.dto.ProductDTO;
 import com.example.pj_webshop.entities.models.dto.ProductOptionDTO;
 import com.example.pj_webshop.entities.models.dto.ProductOptionGroupDTO;
 import com.example.pj_webshop.entities.models.dto.ProductPropertiesDTO;
-import com.example.pj_webshop.entities.models.products.Product;
-import com.example.pj_webshop.entities.models.products.ProductOption;
-import com.example.pj_webshop.entities.models.products.ProductOptionGroup;
-import com.example.pj_webshop.entities.models.products.ProductProperties;
+import com.example.pj_webshop.entities.models.products.*;
 import com.example.pj_webshop.repositories.products.ProductOptionGroupRepository;
 import com.example.pj_webshop.repositories.products.ProductOptionRepository;
 import com.example.pj_webshop.repositories.products.ProductPropertiesRepository;
@@ -87,7 +84,10 @@ public class ProductPropertiesService {
         ProductOptionGroupDTO dto = new ProductOptionGroupDTO();
         dto.setProductOptionGroupId(group.getProductOptionGroupId());
         dto.setName(group.getName());
-        dto.setAvailableOptionsState(group.getAvailableOptionsState().toString());
+        if (group.getAvailableOptionsState() != null)
+            dto.setAvailableOptionsState(group.getAvailableOptionsState().toString());
+        else
+            dto.setAvailableOptionsState(AvailableOptionsState.UNKNOWN.toString());
         dto.setRequired(group.isRequired());
         dto.setGroupModificationMode(group.getGroupModificationMode().name());
         dto.setProductOptions(group.getProductOptions().stream()
