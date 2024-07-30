@@ -34,6 +34,7 @@ public class ProductPropertiesService {
     private final ProductPropertiesRepository repository;
     private final ProductOptionRepository productOptionRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -155,44 +156,74 @@ public class ProductPropertiesService {
     }
 
     public Optional<ProductPropertiesDTO> addNew(@NotNull ProductPropertiesDTO propertiesDTO) {
-
         ProductProperties properties = convertToEntity(propertiesDTO);
 
-        if (repository.existsById(properties.getProductPropertiesId())) {
-            return Optional.empty();
+        // Если id продукта присутствует и не равен 0, проверяем, существует ли такой продукт
+        if (properties.getProduct().getProductId() != 0 && productRepository.existsById(properties.getProduct().getProductId())) {
+            // Обновляем существующий продукт
+            Product existingProduct = productRepository.findById(properties.getProduct().getProductId()).orElse(null);
+            if (existingProduct != null) {
+                existingProduct.setProductName(properties.getProduct().getProductName());
+                existingProduct.setProductDescription(properties.getProduct().getProductDescription());
+                existingProduct.setPrice(properties.getProduct().getPrice());
+                existingProduct.setProductImage(properties.getProduct().getProductImage());
+                productRepository.saveAndFlush(existingProduct);
+                properties.setProduct(existingProduct);
+            }
+        } else {
+            // Создаем новый продукт
+            properties.getProduct().setProductId(0);
         }
 
-        ProductProperties mergedProperties = entityManager.merge(properties);
-        var propertiesSaved = repository.saveAndFlush(mergedProperties);
-        properties.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
-
-        Product product = properties.getProduct();
-        if (product != null && !productRepository.existsById(product.getProductId())) {
-            product.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
-            product = productRepository.saveAndFlush(product);
-            properties.setProduct(product);
+        // Если id ProductProperties присутствует и не равен 0, проверяем, существует ли такой ProductProperties
+        if (properties.getProductPropertiesId() != 0 && repository.existsById(properties.getProductPropertiesId())) {
+            // Обновляем существующий ProductProperties
+            ProductProperties existingProperties = repository.findById(properties.getProductPropertiesId()).orElse(null);
+            if (existingProperties != null) {
+                existingProperties.setDescription(properties.getDescription());
+                existingProperties.setProduct(properties.getProduct());
+                properties = existingProperties;
+            }
+        } else {
+            // Создаем новый ProductProperties
+            properties.setProductPropertiesId(0);
         }
 
-        properties.getProductOptionGroups().forEach(group -> {
-            group.setProductPropertiesId(propertiesSaved.getProductPropertiesId());
-        });
-
+        // Устанавливаем id групп и опций в 0 для новых записей
         if (properties.getProductOptionGroups() != null) {
             for (ProductOptionGroup group : properties.getProductOptionGroups()) {
-                ProductOptionGroup savedGroup = productOptionGroupRepository.saveAndFlush(group);
-                if (group.getProductOptions() != null) {
-                    List<ProductOption> options = new ArrayList<>();
+                if (group.getProductOptionGroupId() == 0) {
+                    group.setProductPropertiesId(0);
                     for (ProductOption option : group.getProductOptions()) {
-                        option.setGroupId(savedGroup.getProductOptionGroupId());
-                        option = productOptionRepository.saveAndFlush(option);
-                        options.add(option);
+                        option.setProductOptionId(0);
                     }
-                    group.setProductOptions(options);
                 }
             }
         }
 
-        return Optional.of(convertToDto(properties));
+        // Сохраняем основную сущность
+        ProductProperties savedProperties = repository.saveAndFlush(properties);
+
+        // Обновляем связи с ID, сгенерированными базой данных
+        if (savedProperties.getProduct() != null) {
+            savedProperties.getProduct().setProductPropertiesId(savedProperties.getProductPropertiesId());
+            productRepository.saveAndFlush(savedProperties.getProduct());
+        }
+
+        if (savedProperties.getProductOptionGroups() != null) {
+            for (ProductOptionGroup group : savedProperties.getProductOptionGroups()) {
+                group.setProductPropertiesId(savedProperties.getProductPropertiesId());
+                ProductOptionGroup savedGroup = productOptionGroupRepository.saveAndFlush(group);
+                if (group.getProductOptions() != null) {
+                    for (ProductOption option : group.getProductOptions()) {
+                        option.setGroupId(savedGroup.getProductOptionGroupId());
+                        productOptionRepository.saveAndFlush(option);
+                    }
+                }
+            }
+        }
+
+        return Optional.of(convertToDto(savedProperties));
     }
 
     public Optional<ProductPropertiesDTO> update(int id, ProductPropertiesDTO newPropertiesDTO) {
