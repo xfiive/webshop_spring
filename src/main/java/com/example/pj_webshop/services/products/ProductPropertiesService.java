@@ -158,9 +158,7 @@ public class ProductPropertiesService {
     public Optional<ProductPropertiesDTO> addNew(@NotNull ProductPropertiesDTO propertiesDTO) {
         ProductProperties properties = convertToEntity(propertiesDTO);
 
-        // Если id продукта присутствует и не равен 0, проверяем, существует ли такой продукт
         if (properties.getProduct().getProductId() != 0 && productRepository.existsById(properties.getProduct().getProductId())) {
-            // Обновляем существующий продукт
             Product existingProduct = productRepository.findById(properties.getProduct().getProductId()).orElse(null);
             if (existingProduct != null) {
                 existingProduct.setProductName(properties.getProduct().getProductName());
@@ -171,13 +169,10 @@ public class ProductPropertiesService {
                 properties.setProduct(existingProduct);
             }
         } else {
-            // Создаем новый продукт
             properties.getProduct().setProductId(0);
         }
 
-        // Если id ProductProperties присутствует и не равен 0, проверяем, существует ли такой ProductProperties
         if (properties.getProductPropertiesId() != 0 && repository.existsById(properties.getProductPropertiesId())) {
-            // Обновляем существующий ProductProperties
             ProductProperties existingProperties = repository.findById(properties.getProductPropertiesId()).orElse(null);
             if (existingProperties != null) {
                 existingProperties.setDescription(properties.getDescription());
@@ -185,11 +180,9 @@ public class ProductPropertiesService {
                 properties = existingProperties;
             }
         } else {
-            // Создаем новый ProductProperties
             properties.setProductPropertiesId(0);
         }
 
-        // Устанавливаем id групп и опций в 0 для новых записей
         if (properties.getProductOptionGroups() != null) {
             for (ProductOptionGroup group : properties.getProductOptionGroups()) {
                 if (group.getProductOptionGroupId() == 0) {
@@ -201,10 +194,8 @@ public class ProductPropertiesService {
             }
         }
 
-        // Сохраняем основную сущность
         ProductProperties savedProperties = repository.saveAndFlush(properties);
 
-        // Обновляем связи с ID, сгенерированными базой данных
         if (savedProperties.getProduct() != null) {
             savedProperties.getProduct().setProductPropertiesId(savedProperties.getProductPropertiesId());
             productRepository.saveAndFlush(savedProperties.getProduct());
