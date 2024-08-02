@@ -1,6 +1,7 @@
 package com.example.pj_webshop.entities.models.products;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class ProductOptionGroup {
     private String name;
 
     @Column(name = "is_required")
+    @JsonProperty("isRequired")
     private boolean isRequired;
 
     @Column(name = "group_modification_mode")
