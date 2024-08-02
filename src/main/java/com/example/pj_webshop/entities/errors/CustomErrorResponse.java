@@ -1,5 +1,6 @@
 package com.example.pj_webshop.entities.errors;
 
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
 
+@Data
 public class CustomErrorResponse implements ErrorResponse {
     private final HttpStatusCode statusCode;
     private final ProblemDetail problemDetail;
@@ -19,9 +21,11 @@ public class CustomErrorResponse implements ErrorResponse {
     private final String method;
     private final String clientIp;
     private final Map<String, String> headers;
+    private final Throwable cause;
 
-    public CustomErrorResponse(HttpStatusCode statusCode, String detail, String path, String method, String clientIp, Map<String, String> headers) {
+    public CustomErrorResponse(HttpStatusCode statusCode, String detail, String path, String method, String clientIp, Map<String, String> headers, Throwable cause) {
         this.statusCode = statusCode;
+        this.cause = cause;
         this.problemDetail = ProblemDetail.forStatusAndDetail(statusCode, detail);
         this.path = path;
         this.method = method;
@@ -31,6 +35,9 @@ public class CustomErrorResponse implements ErrorResponse {
         this.problemDetail.setProperty("method", method);
         this.problemDetail.setProperty("clientIp", clientIp);
         this.problemDetail.setProperty("headers", headers);
+        if (cause != null) {
+            this.problemDetail.setProperty("cause", cause.toString());
+        }
     }
 
     @Override

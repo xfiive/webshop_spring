@@ -39,7 +39,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNullPointerException(@NotNull NullPointerException exception, WebRequest request, Locale locale) {
         RequestData requestData = getRequestData((ServletWebRequest) request);
 
-        CustomErrorResponse errorResponse = new CustomErrorResponse(HttpStatus.NOT_FOUND, "Error on fetching data: " + exception.getMessage(), requestData.path(), requestData.method(), requestData.clientIp(), requestData.headers());
+        CustomErrorResponse errorResponse = new CustomErrorResponse(
+                HttpStatus.NOT_FOUND,
+                "Error on fetching data: " + exception.getMessage(),
+                requestData.path,
+                requestData.method,
+                requestData.clientIp,
+                requestData.headers,
+                exception.getCause()
+        );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -47,7 +55,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConversionNotSupportedException(@NotNull ConversionNotSupportedException exception, WebRequest request, Locale locale) {
         RequestData requestData = getRequestData((ServletWebRequest) request);
 
-        CustomErrorResponse errorResponse = new CustomErrorResponse(HttpStatus.NOT_FOUND, "Internal server error: " + exception.getMessage(), requestData.path(), requestData.method(), requestData.clientIp(), requestData.headers());
+        CustomErrorResponse errorResponse = new CustomErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Fetching data error: " + exception.getMessage(),
+                requestData.path,
+                requestData.method,
+                requestData.clientIp,
+                requestData.headers,
+                exception.getCause()
+        );
+
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -55,11 +72,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(@NotNull Exception exception, WebRequest request, Locale locale) {
         RequestData requestData = getRequestData((ServletWebRequest) request);
 
-        CustomErrorResponse errorResponse = new CustomErrorResponse(HttpStatus.NOT_FOUND, "Failed to parse exception type. General exception returned: " + exception.getMessage(), requestData.path(), requestData.method(), requestData.clientIp(), requestData.headers());
+        CustomErrorResponse errorResponse = new CustomErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "General error: " + exception.getMessage(),
+                requestData.path,
+                requestData.method,
+                requestData.clientIp,
+                requestData.headers,
+                exception.getCause()
+        );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     private record RequestData(String path, String method, String clientIp, Map<String, String> headers) {
     }
-
 }
