@@ -27,8 +27,6 @@ public class AdminController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Administration admin) {
-        System.out.println("Username from frontend: " + admin.getUsername());
-        System.out.println("Password from frontend: " + admin.getPasswordHash());
         String token = adminService.login(admin.getUsername(), admin.getPasswordHash());
         if (token != null) {
             String jwt = jwtUtil.generateToken(admin.getUsername());
