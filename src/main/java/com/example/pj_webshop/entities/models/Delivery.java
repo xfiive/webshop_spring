@@ -27,8 +27,4 @@ public class Delivery {
     private String deliverToAddress;
 
     private String deliveryRequirements;
-
-//    @OneToOne(mappedBy = "delivery")
-//    @JsonBackReference
-//    private Order order;
 }
