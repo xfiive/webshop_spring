@@ -3,6 +3,8 @@ package com.example.pj_webshop.controllers.products;
 import com.example.pj_webshop.entities.models.products.Product;
 import com.example.pj_webshop.entities.models.products.ProductProperties;
 import com.example.pj_webshop.services.products.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequestMapping("/products")
 public class ProductController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private ProductService productService;
 
     @Autowired
@@ -70,9 +73,10 @@ public class ProductController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteOrderById(@PathVariable int id) {
+        log.info("ID received: {}", id);
         boolean isDeleted = productService.deleteProduct(id);
         if (!isDeleted)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
