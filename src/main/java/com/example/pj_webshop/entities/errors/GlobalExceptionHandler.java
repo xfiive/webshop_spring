@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
                 requestData.method,
                 requestData.clientIp,
                 requestData.headers,
-                exception.getCause()
+                new CustomException(exception)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -56,13 +56,13 @@ public class GlobalExceptionHandler {
         RequestData requestData = getRequestData((ServletWebRequest) request);
 
         CustomErrorResponse errorResponse = new CustomErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.NOT_FOUND,
                 "Fetching data error: " + exception.getMessage(),
                 requestData.path,
                 requestData.method,
                 requestData.clientIp,
                 requestData.headers,
-                exception.getCause()
+                new CustomException(exception)
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -73,13 +73,13 @@ public class GlobalExceptionHandler {
         RequestData requestData = getRequestData((ServletWebRequest) request);
 
         CustomErrorResponse errorResponse = new CustomErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
+                HttpStatus.NOT_FOUND,
                 "General error: " + exception.getMessage(),
                 requestData.path,
                 requestData.method,
                 requestData.clientIp,
                 requestData.headers,
-                exception.getCause()
+                new CustomException(exception)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
