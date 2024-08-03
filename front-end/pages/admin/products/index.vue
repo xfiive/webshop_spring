@@ -154,9 +154,9 @@ const handleAdd = () => {
         price: 0,
         productImage: '',
         productDescription: '',
-        productId: 0,
-        productPropertiesId: 0
-    } as Product;
+        productId: null,
+        productPropertiesId: null
+    };
     viewModalAdd.value = true;
 };
 const handleEdit = (productId: number) => {
@@ -192,10 +192,16 @@ const submitDeleteForm = async () => {
 };
 const submitCreateProps = async (groups: ProductOptionGroup[]) => {
 
+    console.log(JSON.stringify({
+        product: {... selectedProduct.value , productPropertiesId: null},
+        productPropertiesId: null,
+        productOptionGroups: groups,
+        description: ''
+    }));
 
     await api.prodProp.prop.add({
-        product: selectedProduct.value,
-        productPropertiesId: 0,
+        product: {... selectedProduct.value , productPropertiesId: null},
+        productPropertiesId: null,
         productOptionGroups: groups,
         description: ''
     });

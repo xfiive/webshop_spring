@@ -41,8 +41,8 @@ const addGroup = () => {
         groupModificationMode: '',
         availableOptionsState: '',
         productOptions: [],
-        productOptionGroupId: 0,
-        productPropertiesId: 0
+        productOptionGroupId: null,
+        productPropertiesId: null
     });
 };
 

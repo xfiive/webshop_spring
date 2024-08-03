@@ -54,8 +54,8 @@ const { group } = defineProps<{ group: ProductOptionGroup }>();
 
 const addOption = () => {
     group.productOptions.push({
-        productOptionId: 0,
-        groupId: 0,
+        productOptionId: null,
+        groupId: null,
         name: 'New Option',
         image: '',
         price: 0,
