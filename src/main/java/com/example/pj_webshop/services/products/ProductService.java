@@ -94,22 +94,47 @@ public class ProductService {
     public boolean deleteProduct(int id) {
         var productOpt = this.findProductById(id);
         if (productOpt.isEmpty()) {
-            log.info("product opt found is empty");
+            log.error("product opt found is empty");
             return false;
         }
-//        var orderOpt = orderedProductRepository.findByProduct(productOpt.get());
-//        if (orderOpt.isEmpty()) {
-//            log.info("order opt found is empty");
-//        }
-//
-//        var deliveryOpt = deliveryRepository.findById(orderOpt.get().getOrder().getDelivery().getDeliveryId());
-//        if (deliveryOpt.isEmpty()) {
-//            log.info("delivery opt found is empty");
-//        }
 
-        productRepository.deleteById(id);
+        log.info("Product found exists");
 
-        return true;
+        var orderedProducts = orderedProductRepository.findAllByProduct(productOpt.get());
+        orderedProducts.forEach(orderedProduct -> {
+            var order = orderedProduct.getOrder();
+            var clientOrderOpt = clientOrderRepository.findByOrderId(order.getOrderId());
+            var delivery = order.getDelivery();
+
+            orderedProductRepository.delete(orderedProduct);
+            clientOrderOpt.ifPresent(clientOrderRepository::delete);
+            if (delivery != null) deliveryRepository.delete(delivery);
+            orderRepository.delete(order);
+        });
+
+        var productPropertiesOpt = productPropertiesRepository.findById(productOpt.get().getProductPropertiesId());
+        if (productPropertiesOpt.isPresent()) {
+            var productProperties = productPropertiesOpt.get();
+            var productOptionGroups = productProperties.getProductOptionGroups();
+
+            productOptionGroups.forEach(group -> {
+                var productOptions = group.getProductOptions();
+                productOptionRepository.deleteAll(productOptions);
+                productOptionGroupRepository.delete(group);
+            });
+
+            productPropertiesRepository.delete(productProperties);
+        }
+
+        productRepository.delete(productOpt.get());
+
+        if (productRepository.findById(id).isEmpty()) {
+            log.info("Product successfully deleted with ID: {}", id);
+            return true;
+        } else {
+            log.error("Failed to delete product with ID: {}", id);
+            return false;
+        }
     }
 
 }
