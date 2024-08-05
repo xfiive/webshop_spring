@@ -1,5 +1,6 @@
 package com.example.pj_webshop.entities.errors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.MessageSource;
@@ -16,14 +17,18 @@ import java.util.Map;
 @Data
 public class CustomErrorResponse implements ErrorResponse {
     private final HttpStatusCode statusCode;
+    @JsonIgnore // -- made this not to copy already given json data
     private final ProblemDetail problemDetail;
+    @JsonIgnore // -- made this not to copy already given json data
     private final String path;
+    @JsonIgnore // -- made this not to copy already given json data
     private final String method;
+    @JsonIgnore // -- made this not to copy already given json data
     private final String clientIp;
     private final Map<String, String> headers;
-    private final Throwable cause;
+    private final CustomException cause;
 
-    public CustomErrorResponse(HttpStatusCode statusCode, String detail, String path, String method, String clientIp, Map<String, String> headers, Throwable cause) {
+    public CustomErrorResponse(HttpStatusCode statusCode, String detail, String path, String method, String clientIp, Map<String, String> headers, CustomException cause) {
         this.statusCode = statusCode;
         this.cause = cause;
         this.problemDetail = ProblemDetail.forStatusAndDetail(statusCode, detail);
