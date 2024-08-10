@@ -62,7 +62,7 @@ public class ClientService {
     }
 
     public Optional<Client> findClientByOrderId(int orderId) {
-        List<ClientOrder> clientOrders = clientOrderRepository.findByOrderId(orderId);
+        List<ClientOrder> clientOrders = clientOrderRepository.findAllByOrderId(orderId);
 
         if (clientOrders.isEmpty()) {
             return Optional.empty();
