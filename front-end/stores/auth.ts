@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
 import { useApi } from '~/composables/useApi';
 
+const cookieName = 'token';
+
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        authenticated: typeof useCookie('token')?.value === 'string',
+        authenticated: typeof useCookie(cookieName)?.value === 'string',
         loading: false,
     }),
     actions: {
@@ -16,21 +18,21 @@ export const useAuthStore = defineStore('auth', {
             console.log(`Token received: ${token}`);
 
             if (token) {
-                const cookie = useCookie('token');
+                const cookie = useCookie(cookieName);
                 cookie.value = token;
                 this.authenticated = true;
             }
         },
 
         logout() {
-            const cookie = useCookie('token');
+            const cookie = useCookie(cookieName);
             cookie.value = null;
             this.authenticated = false;
         }
     },
     getters:{
       getToken(): string | null {
-          return useCookie('token').value || null;
+          return useCookie(cookieName).value || null;
       }
     },
 });

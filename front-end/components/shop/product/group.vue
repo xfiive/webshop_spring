@@ -3,20 +3,29 @@ import type { ProductOption, ProductOptionGroup } from '~/models/product';
 
 const { group } = defineProps<{ group: ProductOptionGroup }>();
 
-const selectedBuff = ref(new Map<ProductOption, boolean>());
+const prepareOrderStore = usePrepareOrderStore();
 
-const isOption = (option: ProductOption): boolean => selectedBuff.value.get(option) || false;
+const selectedBuff = ref<ProductOption[]>([]);
+
+const isOption = (option: ProductOption): boolean => selectedBuff.value.includes(option);
 
 const handleOptionClick = (option: ProductOption) => {
     switch (group.availableOptionsState) {
         case 'MULTIPLE_OPTIONS_ALLOWED':
-            selectedBuff.value.set(option, !isOption(option));
+            if (isOption(option)) {
+                selectedBuff.value.splice(selectedBuff.value.indexOf(option), 1);
+            }
+            else{
+                selectedBuff.value.push(option);
+            }
             break;
         case 'SINGLE_OPTION_ALLOWED':
-            selectedBuff.value.clear();
-            selectedBuff.value.set(option, true);
+            selectedBuff.value = [];
+            selectedBuff.value.push(option);
             break;
     }
+
+    prepareOrderStore.setTmpOrderData(group, [...selectedBuff.value]);
 };
 
 </script>

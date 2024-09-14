@@ -19,7 +19,7 @@
                 <NuxtLink to="/" class="nav_link header__logo">parjorie<br>creations</NuxtLink>
                 <NuxtLink to="#" class="nav_link">abous us</NuxtLink>
                 <NuxtLink to="/admin" class="nav_link">Admin</NuxtLink>
-                <button class="nav_link"><img src="/Header/cart.png" alt="cart"></button>
+                <button class="nav_link"><img src="/Header/cart.png" alt="cart" @click="show=!show"></button>
             </div>
 
             <div class="header__icons">
@@ -60,6 +60,12 @@
         </div>
     </div>
 
+    <ModalSide :show @close="show=false">
+        <template #body>
+            <ShopCart/>
+        </template>
+    </ModalSide>
+
     <div class="cart__wrapper">
         <div class="cart__menu">
             <!--			<a @click="closeCart()" class="delete-button">-->
@@ -88,7 +94,7 @@
 
 <script setup lang="ts">
 
-
+const show = ref(false);
 
 </script>
 

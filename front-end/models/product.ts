@@ -10,7 +10,7 @@ export type Product = {
 
 export type ProductProperties = {
     productPropertiesId: number | null;
-    product: Product; // This type will need to be defined based on the 'Product' class.
+    product: Product | null; // This type will need to be defined based on the 'Product' class.
     description: string;
     productOptionGroups: ProductOptionGroup[]; // This type will also need to be defined.
 };
