@@ -28,16 +28,6 @@ const totalPrice = computed(() => {
     return (basePrice + getAdditionalCost.value).toFixed(2);
 });
 
-
-const checkTmpData = (): boolean => {
-    return false;
-};
-
-const handleSumbit = () => {
-    if (checkTmpData()){
-    }
-};
-
 </script>
 
 <style scoped>

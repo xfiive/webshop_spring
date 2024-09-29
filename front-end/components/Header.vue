@@ -60,9 +60,13 @@
         </div>
     </div>
 
-    <ModalSide :show @close="show=false">
+    <ModalSide :show @close="show=false" >
         <template #body>
             <ShopCart/>
+        </template>
+        <template #bottom>
+            <button @click="handleBuy">{{ loading ? 'Redirecting...' : 'Pay Now' }}</button>
+            <p>{{errorMessage}}</p>
         </template>
     </ModalSide>
 
@@ -94,7 +98,35 @@
 
 <script setup lang="ts">
 
+import { loadStripe } from '@stripe/stripe-js';
+
 const show = ref(false);
+
+const loading = ref(false);
+
+const errorMessage = ref("");
+
+async function handleBuy() {
+    console.log('TIME TO PAY');
+    loading.value = true;
+
+
+    try {
+        // Call the API endpoint to create a Checkout Session
+        const { sessionId } = await $fetch('/api/create-session', {
+            method: 'POST',
+            body: { orders: useOrderStore().orders },
+        })
+
+        // Redirect to Stripe Checkout
+        const stripe = await loadStripe(useRuntimeConfig().public.stripePublishableKey);
+        await stripe!.redirectToCheckout({ sessionId })
+    } catch (error: any) {
+        errorMessage.value = error.message || 'An error occurred'
+    } finally {
+        loading.value = false
+    }
+}
 
 </script>
 
@@ -143,6 +175,8 @@ const subtractNum = (item) => {
 -->
 
 <style scoped>
+
+
 .header {
     position: fixed;
     top: 0;

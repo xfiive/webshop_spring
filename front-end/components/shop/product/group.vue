@@ -5,6 +5,8 @@ const { group } = defineProps<{ group: ProductOptionGroup }>();
 
 const prepareOrderStore = usePrepareOrderStore();
 
+const { tmpOrderData } = storeToRefs(prepareOrderStore);
+
 const selectedBuff = ref<ProductOption[]>([]);
 
 const isOption = (option: ProductOption): boolean => selectedBuff.value.includes(option);
@@ -14,8 +16,7 @@ const handleOptionClick = (option: ProductOption) => {
         case 'MULTIPLE_OPTIONS_ALLOWED':
             if (isOption(option)) {
                 selectedBuff.value.splice(selectedBuff.value.indexOf(option), 1);
-            }
-            else{
+            } else {
                 selectedBuff.value.push(option);
             }
             break;
@@ -27,6 +28,17 @@ const handleOptionClick = (option: ProductOption) => {
 
     prepareOrderStore.setTmpOrderData(group, [...selectedBuff.value]);
 };
+
+onMounted(() => {
+    const { value } = tmpOrderData;
+
+    if (!value) return;
+
+    Array.from(value.entries()).map(
+        ([, options]) =>
+            options.forEach(option => selectedBuff.value.push(option))
+    );
+});
 
 </script>
 

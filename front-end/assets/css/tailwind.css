@@ -8,7 +8,7 @@ body {
 
 @layer utilities {
     .custom-scrollbar {
-        /* For Firefox */
+        /*!* For Firefox *!
         scrollbar-color: #888 transparent;
 
 
@@ -18,7 +18,7 @@ body {
 
         &::-webkit-scrollbar-thumb {
             background-color: #ff0000;
-            border-radius: 3px; /* Fully rounded corners */
+            border-radius: 3px; !* Fully rounded corners *!
         }
 
         &::-webkit-scrollbar-thumb:hover {
@@ -27,11 +27,14 @@ body {
             border-width: 4px;
         }
 
-        /* Hide scrollbar arrows/buttons */
+        !* Hide scrollbar arrows/buttons *!
         &::-webkit-scrollbar-button {
-            display: none; /* Hides the arrows */
-        }
+            display: none; !* Hides the arrows *!
+        }*/
 
-        @apply scrollbar-track-violet-900 /*scrollbar*/;
+        /*@apply scrollbar-track-violet-900 !*scrollbar*!;*/
+        ::-webkit-scrollbar{
+            display: none;
+        }
     }
 }
